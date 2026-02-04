@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ohm's Law Calculator</title>
+<style>
+body { font-family: Arial, sans-serif; padding: 20px; background: #f0f8ff; }
+h1 { text-align: center; color: #1a73e8; }
+.container { max-width: 500px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);}
+label { display:block; margin-top: 15px; font-weight: bold; }
+input, select { padding: 5px; margin-top: 5px; width: 100%; font-size: 16px; }
+button { margin-top: 20px; padding: 10px 15px; background: #1a73e8; color: #fff; border:none; border-radius: 5px; cursor:pointer; font-size: 16px;}
+button:hover { background: #155ab6; }
+.result { margin-top: 20px; font-size: 1.2em; color: #333; text-align: center;}
+img.diagram { width:100%; margin-top:20px; border-radius: 10px;}
+small { color: #555; display:block; margin-top:5px;}
+</style>
+</head>
+<body>
+
+<h1>Ohm's Law Calculator</h1>
+<div class="container">
+
+<label for="calcType">Calculate:</label>
+<select id="calcType">
+  <option value="R">Resistance (R)</option>
+  <option value="V">Voltage (V)</option>
+  <option value="I">Current (I)</option>
+</select>
+
+<label for="value1">Value 1:</label>
+<input type="number" id="value1" placeholder="Enter first value">
+<select id="unit1"></select>
+
+<label for="value2">Value 2:</label>
+<input type="number" id="value2" placeholder="Enter second value">
+<select id="unit2"></select>
+
+<button onclick="calculate()">Calculate</button>
+
+<div class="result" id="result"></div>
+
+<img class="diagram" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Ohm%27s_law_circuit.svg/300px-Ohm%27s_law_circuit.svg.png" alt="Ohm's Law Diagram">
+<small>V = I × R</small>
+
+</div>
+
+<script>
+const unitOptions = {
+  V: { "mV": 0.001, "V": 1, "kV": 1000 },
+  I: { "μA": 0.000001, "mA": 0.001, "A": 1 },
+  R: { "Ω": 1, "kΩ": 1000, "MΩ": 1000000 }
+};
+
+const calcType = document.getElementById("calcType");
+const unit1 = document.getElementById("unit1");
+const unit2 = document.getElementById("unit2");
+
+// Populate unit dropdowns based on what we calculate
+function populateUnits() {
+  const type = calcType.value;
+  unit1.innerHTML = '';
+  unit2.innerHTML = '';
+  
+  let input1Units, input2Units;
+
+  if(type === 'R') { input1Units = Object.keys(unitOptions.V); input2Units = Object.keys(unitOptions.I); }
+  if(type === 'V') { input1Units = Object.keys(unitOptions.I); input2Units = Object.keys(unitOptions.R); }
+  if(type === 'I') { input1Units = Object.keys(unitOptions.V); input2Units = Object.keys(unitOptions.R); }
+
+  input1Units.forEach(u => unit1.innerHTML += `<option value="${u}">${u}</option>`);
+  input2Units.forEach(u => unit2.innerHTML += `<option value="${u}">${u}</option>`);
+}
+
+calcType.addEventListener('change', populateUnits);
+window.onload = populateUnits;
+
+function calculate() {
+  const type = calcType.value;
+  let val1 = parseFloat(document.getElementById("value1").value);
+  let val2 = parseFloat(document.getElementById("value2").value);
+  const u1 = unit1.value;
+  const u2 = unit2.value;
+
+  if(isNaN(val1) || isNaN(val2)) {
+    document.getElementById("result").innerHTML = "Please enter both values.";
+    return;
+  }
+
+  // Convert inputs to base units
+  let baseVal1, baseVal2;
+  if(type === 'R') { baseVal1 = val1 * unitOptions.V[u1]; baseVal2 = val2 * unitOptions.I[u2]; }
+  if(type === 'V') { baseVal1 = val1 * unitOptions.I[u1]; baseVal2 = val2 * unitOptions.R[u2]; }
+  if(type === 'I') { baseVal1 = val1 * unitOptions.V[u1]; baseVal2 = val2 * unitOptions.R[u2]; }
+
+  let result, resUnit;
+
+  switch(type){
+    case "R":
+      result = baseVal1 / baseVal2;
+      resUnit = "Ω";
+      if(result >= 1000000) { result = result/1000000; resUnit = "MΩ"; }
+      else if(result >= 1000) { result = result/1000; resUnit = "kΩ"; }
+      break;
+    case "V":
+      result = baseVal1 * baseVal2;
+      resUnit = "V";
+      if(result >= 1000) { result = result/1000; resUnit = "kV"; }
+      else if(result < 1) { result = result*1000; resUnit = "mV"; }
+      break;
+    case "I":
+      result = baseVal1 / baseVal2;
+      resUnit = "A";
+      if(result >= 1) { resUnit = "A"; }
+      else if(result >= 0.001) { result = result*1000; resUnit = "mA"; }
+      else { result = result*1000000; resUnit = "μA"; }
+      break;
+  }
+
+  document.getElementById("result").innerHTML = `<strong>${type} = ${result.toFixed(3)} ${resUnit}</strong>`;
+}
+</script>
+
+</body>
+</html>
