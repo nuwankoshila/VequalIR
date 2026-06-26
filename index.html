@@ -9,8 +9,8 @@ body { font-family: Arial, sans-serif; padding: 20px; background: #f0f8ff; }
 h1 { text-align: center; color: #1a73e8; }
 .container { max-width: 500px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);}
 label { display:block; margin-top: 15px; font-weight: bold; }
-input, select { padding: 5px; margin-top: 5px; width: 100%; font-size: 16px; }
-button { margin-top: 20px; padding: 10px 15px; background: #1a73e8; color: #fff; border:none; border-radius: 5px; cursor:pointer; font-size: 16px;}
+input, select { padding: 5px; margin-top: 5px; width: 100%; font-size: 16px; box-sizing: border-box;}
+button { margin-top: 20px; padding: 10px 15px; background: #1a73e8; color: #fff; border:none; border-radius: 5px; cursor:pointer; font-size: 16px; width: 100%;}
 button:hover { background: #155ab6; }
 .result { margin-top: 20px; font-size: 1.2em; color: #333; text-align: center;}
 img.diagram { width:100%; margin-top:20px; border-radius: 10px;}
@@ -29,11 +29,12 @@ small { color: #555; display:block; margin-top:5px;}
   <option value="I">Current (I)</option>
 </select>
 
-<label for="value1">Value 1:</label>
+<!-- Added unique IDs to these labels so we can change them via JS -->
+<label for="value1" id="lblValue1">Value 1:</label>
 <input type="number" id="value1" placeholder="Enter first value">
 <select id="unit1"></select>
 
-<label for="value2">Value 2:</label>
+<label for="value2" id="lblValue2">Value 2:</label>
 <input type="number" id="value2" placeholder="Enter second value">
 <select id="unit2"></select>
 
@@ -56,8 +57,10 @@ const unitOptions = {
 const calcType = document.getElementById("calcType");
 const unit1 = document.getElementById("unit1");
 const unit2 = document.getElementById("unit2");
+const lblValue1 = document.getElementById("lblValue1");
+const lblValue2 = document.getElementById("lblValue2");
 
-// Populate unit dropdowns based on what we calculate
+// Populate unit dropdowns AND dynamic labels based on calculation type
 function populateUnits() {
   const type = calcType.value;
   unit1.innerHTML = '';
@@ -65,9 +68,24 @@ function populateUnits() {
   
   let input1Units, input2Units;
 
-  if(type === 'R') { input1Units = Object.keys(unitOptions.V); input2Units = Object.keys(unitOptions.I); }
-  if(type === 'V') { input1Units = Object.keys(unitOptions.I); input2Units = Object.keys(unitOptions.R); }
-  if(type === 'I') { input1Units = Object.keys(unitOptions.V); input2Units = Object.keys(unitOptions.R); }
+  if(type === 'R') { 
+    lblValue1.innerText = "Voltage (V):";
+    lblValue2.innerText = "Current (I):";
+    input1Units = Object.keys(unitOptions.V); 
+    input2Units = Object.keys(unitOptions.I); 
+  }
+  if(type === 'V') { 
+    lblValue1.innerText = "Current (I):";
+    lblValue2.innerText = "Resistance (R):";
+    input1Units = Object.keys(unitOptions.I); 
+    input2Units = Object.keys(unitOptions.R); 
+  }
+  if(type === 'I') { 
+    lblValue1.innerText = "Voltage (V):";
+    lblValue2.innerText = "Resistance (R):";
+    input1Units = Object.keys(unitOptions.V); 
+    input2Units = Object.keys(unitOptions.R); 
+  }
 
   input1Units.forEach(u => unit1.innerHTML += `<option value="${u}">${u}</option>`);
   input2Units.forEach(u => unit2.innerHTML += `<option value="${u}">${u}</option>`);
