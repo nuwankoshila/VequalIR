@@ -15,6 +15,20 @@ button:hover { background: #155ab6; }
 .result { margin-top: 20px; font-size: 1.2em; color: #333; text-align: center;}
 img.diagram { width:100%; margin-top:20px; border-radius: 10px;}
 small { color: #555; display:block; margin-top:5px;}
+
+/* Custom Tool Footer Styling */
+.tool-footer {
+  text-align: center;
+  margin-top: 30px;
+  padding-top: 15px;
+  border-top: 1px dashed #cbd5e1;
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.tool-footer strong {
+  color: #1a73e8;
+}
 </style>
 </head>
 <body>
@@ -29,7 +43,6 @@ small { color: #555; display:block; margin-top:5px;}
   <option value="I">Current (I)</option>
 </select>
 
-<!-- Added unique IDs to these labels so we can change them via JS -->
 <label for="value1" id="lblValue1">Value 1:</label>
 <input type="number" id="value1" placeholder="Enter first value">
 <select id="unit1"></select>
@@ -44,6 +57,12 @@ small { color: #555; display:block; margin-top:5px;}
 
 <img class="diagram" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Ohm%27s_law_circuit.svg/300px-Ohm%27s_law_circuit.svg.png" alt="Ohm's Law Diagram">
 <small>V = I × R</small>
+
+<!-- Added your custom credentials footer here -->
+<div class="tool-footer">
+  Created by <strong>Koshila Jayawickrama</strong><br>
+  <small style="display:inline; color:#64748b;">B.Sc. in Electronics , Dip in ICT </small>
+</div>
 
 </div>
 
@@ -60,7 +79,6 @@ const unit2 = document.getElementById("unit2");
 const lblValue1 = document.getElementById("lblValue1");
 const lblValue2 = document.getElementById("lblValue2");
 
-// Populate unit dropdowns AND dynamic labels based on calculation type
 function populateUnits() {
   const type = calcType.value;
   unit1.innerHTML = '';
@@ -106,7 +124,6 @@ function calculate() {
     return;
   }
 
-  // Convert inputs to base units
   let baseVal1, baseVal2;
   if(type === 'R') { baseVal1 = val1 * unitOptions.V[u1]; baseVal2 = val2 * unitOptions.I[u2]; }
   if(type === 'V') { baseVal1 = val1 * unitOptions.I[u1]; baseVal2 = val2 * unitOptions.R[u2]; }
